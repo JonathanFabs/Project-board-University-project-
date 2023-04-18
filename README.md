@@ -1,1 +1,2 @@
-# Project-board-University-project-
+# Project Brief:
+# Technologies Used:
