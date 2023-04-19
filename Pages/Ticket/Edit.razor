@@ -1,0 +1,69 @@
+﻿@page "/Ticket/Edit/{Id:guid}"
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<head>
+    <style>
+        .content {
+            max-width: 500px;
+            margin: auto;
+            padding: 10px
+        }
+        .Title {
+            margin: auto;
+            padding-bottom: 5px;
+        }
+        
+
+    </style>
+    <h3><b><div class="Title"> Edit ticket details page</div></b></h3>
+</head>
+<body>
+        <div class="content">
+            <h4><div class="Title"><i>Please enter the details of the ticket you would like to edit:</i></div></h4>
+            <EditForm Model="Ticket" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class="control-label">Ticket Message:</label>
+                    <InputText @bind-Value="Ticket.Message"></InputText>
+                    <ValidationMessage For="@(() => Ticket.Message)" />
+                    <p style="font-size: 14px"><i>For example: Add more information to board for project etc .</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Ticket user:</label>
+                    <InputText @bind-Value="Ticket.User"></InputText>
+                    <ValidationMessage For="@(() => Ticket.User)" />
+                    <p style="font-size: 14px"><i>Enter in the information of what user is assigned this ticket .</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Assign ticket to project:</label>
+                    <InputText @bind-Value="Ticket.Project"></InputText>
+                    <ValidationMessage For="@(() => Ticket.Project)" />
+                    <p style="font-size: 14px"><i>Enter in the project name for the ticket .</i></p>
+                </div>
+
+                <button type="submit" class=" btn-btn-primary">Submit</button>
+            </EditForm>
+        </div>
+</body>
+@code {
+    public Ticket Ticket { get; set; } = new Ticket();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Ticket = await Http.GetFromJsonAsync<Ticket>($"/api/Tickets/{Id}");
+    }
+
+    private async void HandleValidSubmit()
+    {
+        var response = await Http.PutAsJsonAsync($"/api/Tickets/{Id}", Ticket);
+        response.EnsureSuccessStatusCode();
+        Navigation.NavigateTo("/Ticket");
+    }
+    //add comments under fields giving an example of whats expected
+}

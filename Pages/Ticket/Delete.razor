@@ -1,0 +1,54 @@
+﻿@page "/Ticket/Delete/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<head>
+    <style>
+        .content {
+            max-width: 500px;
+            margin: auto;
+            padding: 10px
+        }
+
+        .Title {
+            margin: auto;
+            padding-bottom: 5px
+        }
+    </style>
+    <div class="Title">
+        <h3>Delete Ticket page</h3><br />
+    </div>
+</head>
+<div class="content">
+    <body>
+        <div>
+            <p>Are you sure you want to delete the ticket: @Ticket.Message, @Ticket.Project</p><br />
+        </div>
+        <button @onclick="DeleteTicket">Delete</button>
+        <button @onclick="Cancel">Cancel</button>
+    </body>
+</div>
+
+@code {
+    public Ticket Ticket { get; set; } = new Ticket();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Ticket = await Http.GetFromJsonAsync<Ticket>($"/api/Tickets/{Id}");
+    }
+
+    private async void DeleteTicket()
+    {
+
+        await Http.DeleteAsync($"/api/Tickets/{Id}");
+        Navigation.NavigateTo("/Ticket");
+    }
+    private void Cancel()
+    {
+
+        Navigation.NavigateTo("/Ticket");
+    }
+}

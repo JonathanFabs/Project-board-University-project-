@@ -1,0 +1,57 @@
+﻿@page "/Project"
+@inject HttpClient Http
+
+<h3>List of Projects</h3>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name of Project</th>
+                <th>Details</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Project in Projects)
+            {
+                <tr>
+                    <td>@Project.ProjectName</td>
+
+                    <td>
+                        <a href="/Project/Details/@Project.Id">Details</a>
+                    </td>
+
+                    <td><a href ="/Project/Edit/@Project.Id">Edit</a>
+                    </td>
+
+                    <td>
+                        <a href="/Project/Delete/@Project.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p>
+    <a class=" btn btn-primary" href="/Project/Create"> Add User</a>
+    
+</p>
+
+@code {
+    private List<Project> Projects = new List<Project>();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Projects = await Http.GetFromJsonAsync<List<Project>>("/api/Projects");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
+    }
+}

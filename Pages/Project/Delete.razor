@@ -1,0 +1,53 @@
+﻿@page "/Project/Delete/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<head>
+    <style>
+        .content {
+            max-width: 500px;
+            margin: auto;
+            padding: 10px
+        }
+
+        .Title {
+            margin: auto;
+            padding-bottom: 5px
+        }
+    </style>
+    <div class="Title">
+        <h3>Delete Project page</h3><br />
+    </div>
+</head>
+<div class="content">
+    <body>
+        <div>
+            <p>Are you sure you want to delete the project: @Project.ProjectName, @Project.ProjectId</p><br />
+        </div>
+        <button @onclick="DeleteProject">Delete</button>
+        <button @onclick="Cancel">Cancel</button>
+    </body>
+</div>
+    @code {
+        public Project Project { get; set; } = new Project();
+
+        [Parameter]
+        public Guid Id { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            Project = await Http.GetFromJsonAsync<Project>($"/api/Projects/{Id}");
+        }
+
+        private async void DeleteProject()
+        {
+
+            await Http.DeleteAsync($"/api/Projects/{Id}");
+            Navigation.NavigateTo("/Project");
+        }
+        private void Cancel()
+        {
+
+            Navigation.NavigateTo("/Project");
+        }
+    }

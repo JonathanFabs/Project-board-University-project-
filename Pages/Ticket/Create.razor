@@ -1,0 +1,73 @@
+﻿@page "/Ticket/create"
+@inject NavigationManager Navigation
+@inject HttpClient Http
+    <head>
+        <style>
+            .content {
+                max-width: 500px;
+                margin: auto;
+                padding: 10px
+            }
+
+            .Title {
+                margin: auto;
+                padding-bottom: 5px
+            }
+        </style>
+        <div class="Title">
+            <h3>Add Ticket page</h3><br />
+        </div>
+    </head>
+    <body>
+        <div class=".content">
+            <h4>Please enter in the details of the ticket you would like to add:</h4>
+            <EditForm Model="Ticket" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div>
+                    <label class=" control-label">Message:</label>
+                    <InputText @bind-Value="Ticket.Message"></InputText>
+                    <ValidationMessage For="@(() => Ticket.Message)" />
+                    <p style="font-size: 14px"><i>For example: Add more information to board for project etc .</i></p>
+                </div>
+                <div>
+                    <label class=" control-label">User ticket is for:</label>
+                    <InputText @bind-Value="Ticket.User"></InputText>
+                    <ValidationMessage For="@(() => Ticket.User)" />
+                    <p style="font-size: 14px"><i>Enter in the information of what user is assigned this ticket .</i></p>
+                </div>
+                <div>
+                    <label class=" control-label">Name of project ticket is addressing:</label>
+                    <InputText @bind-Value="Ticket.Project"></InputText>
+                    <ValidationMessage For="@(()=> Ticket.Project)" />
+                    <p style="font-size: 14px"><i>Enter in the project name for the ticket .</i></p>
+                </div>
+
+                <button type="submit" class=" btn-btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </body>
+
+@code {
+    public Ticket Ticket { get; set; } = new Ticket();
+
+    private async void HandleValidSubmit()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("/api/Tickets", Ticket);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var ticket = JsonConvert.DeserializeObject<Ticket>(content);
+            Navigation.NavigateTo("/Ticket");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
+    }
+}

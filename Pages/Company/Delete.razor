@@ -1,0 +1,53 @@
+﻿@page "/Company/Delete/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<head>
+    <style>
+        .content {
+            max-width: 500px;
+            margin: auto;
+            padding: 10px
+        }
+
+        .Title {
+            margin: auto;
+            padding-bottom: 5px
+        }
+    </style>
+    <div class="Title">
+        <h3>Delete company page</h3><br />
+    </div>
+</head>
+<div class="content">
+    <body>
+        <div>
+            <p>Are you sure you want to delete the project: @Company.CompanyName, @Company.CompanyId</p><br />
+        </div>
+        <button @onclick ="DeleteCompany">Delete</button>
+        <button @onclick="Cancel">Cancel</button>
+    </body>
+</div>
+@code {
+    public Company Company { get; set; } = new Company();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Company = await Http.GetFromJsonAsync<Company>($"/api/Companies/{Id}");
+    }
+
+    private async void DeleteCompany()
+    {
+
+        await Http.DeleteAsync($"/api/Companies/{Id}");
+        Navigation.NavigateTo("/Company");
+    }
+    private void Cancel()
+    {
+
+        Navigation.NavigateTo("/Company");
+    }
+}

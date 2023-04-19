@@ -1,0 +1,57 @@
+﻿@page "/Company"
+@inject HttpClient Http
+
+
+<h3>List of Companies</h3>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name of Company</th>
+                <th>Details</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Company in Companies)
+            {
+                <tr>
+                    <td>@Company.CompanyName</td>
+
+                    <td>
+                        <a href="/Company/Details/@Company.Id">Details</a>
+                    </td>
+
+                    <td>
+                        <a href="/Company/Edit/@Company.Id">Edit</a>
+                    </td>
+
+                    <td>
+                    <a href="/Company/Delete/@Company.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p>
+    <a class=" btn btn-primary" href="/Company/Create"> Add User</a>
+</p>
+@code {
+    private List<Company> Companies = new List<Company>();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Companies = await Http.GetFromJsonAsync<List<Company>>("/api/Companies");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
+    }
+}

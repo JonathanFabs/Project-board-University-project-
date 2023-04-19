@@ -1,0 +1,68 @@
+﻿@page "/Project/Edit/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+    <head>
+        <style>
+            .content{
+                max-width: 500px;
+                margin: auto;
+                padding:10px
+            }
+            .Title {
+                padding-bottom: 5px
+            }
+        </style>
+
+        <h3><b><div class="Title">Edit project details Page</div></b></h3>
+
+        
+    </head>
+    <body>
+        <div class="content">
+            
+            <h4><i><div class="Title">Please enter the details of the project you would like to edit</div></i></h4>
+            <EditForm Model="Project" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class="control-label">Project Name:</label>
+                    <InputText @bind-Value="Project.ProjectName"></InputText>
+                    <ValidationMessage For="@(() => Project.ProjectId)" />
+                    <p style="font-size: 14px"><i>For example: Hotel scheme, Improving popularity etc .</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Company issuing project :</label>
+                    <InputText @bind-Value="Project.CProject"></InputText>
+                    <ValidationMessage For="@(() => Project.CProject)" />
+                    <p style="font-size: 14px"><i>Enter the name of the company project is issued towards .</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Project ID:</label>
+                    <InputNumber @bind-Value="Project.ProjectId"></InputNumber>
+                    <ValidationMessage For="@(() => Project.ProjectId)" />
+                </div>
+
+                <button type="submit" class=" btn-btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </body>
+
+    @code {
+        public Project Project { get; set; } = new Project();
+
+        [Parameter]
+        public Guid Id { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            Project = await Http.GetFromJsonAsync<Project>($"/api/Projects/{Id}");
+        }
+        private async void HandleValidSubmit()
+        {
+            var response = await Http.PutAsJsonAsync($"/api/Projects/{Id}", Project);
+            response.EnsureSuccessStatusCode();
+            Navigation.NavigateTo("/Project");
+        }
+        //add comments under fields giving an example of whats expected
+    }

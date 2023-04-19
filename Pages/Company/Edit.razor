@@ -1,0 +1,63 @@
+﻿@page "/Company/Edit/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+    <head>
+        <style>
+            .content {
+                max-width: 500px;
+                margin: auto;
+                padding: 10px
+            }
+            .Title {
+                margin: auto;
+                padding-bottom: 5px
+            }
+        </style>
+
+        <h3><div style="text-align:center">Edit Company details page:</div></h3>
+
+    </head>
+    <body>
+        <div class=".content">
+            <h4><div style="text-align:center">Please enter the details of the company you would like to change</div></h4>
+            <EditForm Model="Company" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class="control-label">Company Name:</label>
+                    <InputText @bind-Value="Company.CompanyName"></InputText>
+                    <ValidationMessage For="@(() => Company.CompanyName)" />
+                    <p style="font-size: 14px"><i>For example: BT, Lloyds, Halifax etc.</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Company Id:</label>
+                    <InputNumber @bind-Value="Company.CompanyId"></InputNumber>
+                    <ValidationMessage For="@(() => Company.CompanyId)" />
+                    <p style="font-size: 14px"><i>For example: 1,2,3 etc.</i></p>
+                </div>
+
+                <button type="submit" class=" btn-btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </body>
+
+    @code {
+        public Company Company { get; set; } = new Company();
+
+        [Parameter]
+        public Guid Id { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            Company = await Http.GetFromJsonAsync<Company>($"/api/Companies/{Id}");
+        }
+
+        private async void HandleValidSubmit()
+        {
+            var response = await Http.PutAsJsonAsync($"/api/companies/{Id}", Company);
+            response.EnsureSuccessStatusCode();
+            Navigation.NavigateTo("/Company");
+        }
+        //add comments under fields giving an example of whats expected
+    }

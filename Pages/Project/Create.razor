@@ -1,0 +1,72 @@
+﻿@page "/Project/create"
+@inject NavigationManager Navigation
+@inject HttpClient Http
+    <head>
+        <style>
+            .content {
+                max-width: 500px;
+                margin: auto;
+                padding: 10px
+            }
+
+            .Title {
+                margin: auto;
+                padding-bottom: 5px
+            }
+        </style>
+        <div class="Title">
+            <h3>Add Project page</h3><br />
+        </div>
+    </head>
+    <body>
+        <div class=".content">
+            <h4>Please enter in the details of the project you would like to add:</h4>
+            <EditForm Model="Project" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class=" control-label">Project Name:</label>
+                    <InputText @bind-Value="Project.ProjectName"></InputText>
+                    <ValidationMessage For="@(() => Project.ProjectName)" />
+                    <p style="font-size: 14px"><i>For example: Hotel scheme, Improving popularity etc .</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Company name in control of Project:</label>
+                    <InputText @bind-Value="Project.CProject"></InputText>
+                    <ValidationMessage For="@(() => Project.CProject)" />
+                    <p style="font-size: 14px"><i>Enter the name of the company project is issued towards .</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Project Id: </label>
+                    <InputNumber @bind-Value="Project.ProjectId"></InputNumber>
+                    <ValidationMessage For="@(() => Project.ProjectId)" />
+                </div>
+
+                <button type="submit" class=" btn-btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </body>
+
+    @code {
+        public Project Project { get; set; } = new Project();
+
+        private async void HandleValidSubmit()
+        {
+            try
+            {
+                var response = await Http.PostAsJsonAsync("/api/Projects", Project);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var project = JsonConvert.DeserializeObject<Project>(content);
+                Navigation.NavigateTo("/Project");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+    }

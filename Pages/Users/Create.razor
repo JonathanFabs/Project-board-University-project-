@@ -1,0 +1,72 @@
+﻿@page "/Users/create"
+@inject NavigationManager Navigation
+@inject HttpClient Http
+    <head>
+        <style>
+            .content {
+                max-width: 500px;
+                margin: auto;
+                padding: 10px
+            }
+
+            .Title {
+                margin: auto;
+                padding-bottom: 5px
+            }
+        </style>
+        <div class="Title">
+            <h3>Add User page</h3><br />
+        </div>
+    </head>
+    <body>
+        <div class=".content">
+            <h4>Please enter in the details of the user you would like to add:</h4>
+            <EditForm Model="User" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class=" control-label">CompanyId</label>
+                    <InputText @bind-Value="User.CompanyId"></InputText>
+                    <ValidationMessage For="@(() => User.CompanyId)" />
+                    <p style="font-size: 14px"><i>For example: Halifax 3 .</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">UserName</label>
+                    <InputText @bind-Value="User.UserName"></InputText>
+                    <ValidationMessage For="@(() => User.UserName)" />
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">Company Name</label>
+                    <InputText @bind-Value="User.CompanyName"></InputText>
+                    <ValidationMessage For="@(()=> User.CompanyName)" />
+                    <p style="font-size: 14px"><i>Enter the users company name .</i></p>
+                </div>
+
+                <button type="submit" class=" btn-btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </body>
+
+    @code {
+        public User User { get; set; } = new User();
+
+        private async void HandleValidSubmit()
+        {
+            try
+            {
+                var response = await Http.PostAsJsonAsync("/api/Users", User);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var user = JsonConvert.DeserializeObject<User>(content);
+                Navigation.NavigateTo("/Users");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+    }

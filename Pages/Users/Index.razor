@@ -1,0 +1,60 @@
+﻿@page "/Users"
+@inject HttpClient Http
+
+<h3>List of Users</h3>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name of User</th>
+                <th>Details</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var User in Users)
+            {
+                <tr>
+                    <td>@User.UserName</td>
+
+                    <td>
+                        <a href="/User/Details/@User.Id">Details</a>
+                    </td>
+
+                    <td>
+                    <a href ="/User/Edit/@User.Id">Edit</a>
+                    
+                    </td>
+
+                    <td>
+                        <a href="/User/Delete/@User.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p>
+    <a class=" btn btn-primary" href="/Users/Create"> Add User</a>
+</p>
+
+@code {
+    private List<User> Users = new List<User>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+           Users = await Http.GetFromJsonAsync<List<User>>("/api/Users");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+
+    }
+
+}

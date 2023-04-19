@@ -1,0 +1,67 @@
+﻿@page "/Company/create"
+@inject NavigationManager Navigation
+@inject HttpClient Http
+    <head>
+        <style>
+            .content {
+                max-width: 500px;
+                margin: auto;
+                padding: 10px
+            }
+
+            .Title {
+                margin: auto;
+                padding-bottom: 5px
+            }
+        </style>
+        <div class="Title">
+            <h3>Add Company page</h3><br />
+        </div>
+    </head>
+    <body>
+        <div class=".content">
+            <h4>Please enter the companies details you would like to add to the system:</h4>
+            <EditForm Model="Company" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class=" control-label">Company Name:</label>
+                    <InputText @bind-Value="Company.CompanyName"></InputText>
+                    <ValidationMessage For="@(() => Company.CompanyName)" />
+                    <p style="font-size: 14px"><i>For example: BT, Lloyds, Halifax etc.</i></p>
+                </div>
+                <div class="form-group">
+                    <label class=" control-label">CompanyId:</label>
+                    <InputNumber @bind-Value="Company.CompanyId"></InputNumber>
+                    <ValidationMessage For="@(() => Company.CompanyId)" />
+                    <p style="font-size: 14px"><i>For example: 1,2,3 etc.</i></p>
+                </div>
+
+                <button type="submit" class=" btn-btn-primary">Submit</button>
+            </EditForm>
+        </div>
+    </body>
+
+    @code {
+        public Company Company { get; set; } = new Company();
+
+        private async void HandleValidSubmit()
+        {
+            try
+            {
+                var response = await Http.PostAsJsonAsync("/api/Companies", Company);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                var company = JsonConvert.DeserializeObject<Company>(content);
+                Navigation.NavigateTo("/Company");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+    }

@@ -1,0 +1,46 @@
+﻿@page "/User/Details/{Id:guid}"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<head>
+    <style>
+        .content {
+            max-width: 500px;
+            margin: auto;
+            padding: 10px
+        }
+
+        .Title {
+            margin: auto;
+            padding-bottom: 5px
+        }
+    </style>
+    <div class="Title">
+        <h3>Details for user </h3><br />
+    </div>
+</head>
+<div class="content">
+    <body>
+        <div>
+            <p>These are the details for the user:</p><br />
+            <p><i>@User.CompanyId, @User.CompanyName, @User.UserName</i></p>
+        </div>
+        <button @onclick="BackButton">Back to main page</button>
+    </body>
+</div>
+
+@code {
+    public User User { get; set; } = new User();
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = await Http.GetFromJsonAsync<User>($"/api/Users/{Id}");
+    }
+    public void BackButton()
+    {
+        Navigation.NavigateTo("/Users");
+    }
+}
